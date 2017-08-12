@@ -23,7 +23,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+//data
         initWebView();
         mWebView.loadUrl(URL);
     }
