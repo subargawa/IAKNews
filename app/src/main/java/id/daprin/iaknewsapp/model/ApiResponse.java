@@ -18,4 +18,8 @@ public class ApiResponse{
 
 	@SerializedName("status")
 	private String status;
+
+	public List<ArticlesItem> getArticles() {
+		return articles;
+	}
 }

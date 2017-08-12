@@ -4,12 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import id.daprin.iaknewsapp.BuildConfig;
 import id.daprin.iaknewsapp.R;
 import id.daprin.iaknewsapp.adapter.NewsAdapter;
 import id.daprin.iaknewsapp.model.ApiResponse;
@@ -21,14 +24,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String TAG = MainActivity.class.getSimpleName();
     /*Recycler view perlu: VIewHolder, Adapter, LayoutManager */
     @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
     LinearLayoutManager mLinearLayoutManager;
-    NewsAdapter mAdapter;
+    NewsAdapter mAdapterDummy;
+    NewsAdapter mAdapterApi;
+    private List<ArticlesItem> mListArticle = new ArrayList<>();
 
     private static final String NEWS_SOURCE = "techcrunch";
-    private static final String API_KEY = "dab9dd81188a4395b299e79e1bc6951c";
+    private static final String API_KEY = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +42,15 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         //SETUP ADAPTER
-        mAdapter = new NewsAdapter(GetDummyArticlesItem());
+        mAdapterDummy = new NewsAdapter(GetDummyArticlesItem());
+        mAdapterApi = new NewsAdapter(mListArticle);
 
         //SETUP RECYCLERVIEW
         mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapterApi);
+
+        getData();
     }
 
     private List<ArticlesItem> GetDummyArticlesItem(){
@@ -61,17 +69,24 @@ public class MainActivity extends AppCompatActivity {
         ApiService apiService = ApiClient.getmRetrofitClient().create(ApiService.class);
         Call<ApiResponse> apiResponseCall = apiService.getArticle(
             NEWS_SOURCE,
-                API_KEY
+                // memanggil API_KEY
+                BuildConfig.APi_KEY
         );
+        Log.d(TAG, "getData: API_KEY" + BuildConfig.APi_KEY);
         apiResponseCall.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-
+                ApiResponse apiResponse = response.body();
+                if (apiResponse != null){
+                    mListArticle = apiResponse.getArticles();
+                    mAdapterApi.setData(mListArticle);
+                }
             }
 
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
-
+                Toast.makeText(MainActivity.this, "call failed" +t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onFailure:", t);
             }
         });
     }

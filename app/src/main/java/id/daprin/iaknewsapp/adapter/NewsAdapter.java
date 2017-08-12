@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -17,7 +18,7 @@ import id.daprin.iaknewsapp.R;
 import id.daprin.iaknewsapp.model.ArticlesItem;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder>{
-    List<ArticlesItem> articlesItemList;
+    List<ArticlesItem> articlesItemList = new ArrayList<>();
 
     public NewsAdapter(List<ArticlesItem> articlesItemList) {
         this.articlesItemList = articlesItemList;
@@ -40,6 +41,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public int getItemCount()
     {
         return articlesItemList.size();
+    }
+
+    //
+    public void setData(List<ArticlesItem> datas){
+        this.articlesItemList.clear();
+        articlesItemList.addAll(datas);
+        notifyDataSetChanged();
     }
 
     //View Holder untuk adapter
