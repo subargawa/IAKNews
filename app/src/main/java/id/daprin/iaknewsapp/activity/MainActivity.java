@@ -12,7 +12,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import id.daprin.iaknewsapp.R;
 import id.daprin.iaknewsapp.adapter.NewsAdapter;
+import id.daprin.iaknewsapp.model.ApiResponse;
 import id.daprin.iaknewsapp.model.ArticlesItem;
+import id.daprin.iaknewsapp.rest.ApiClient;
+import id.daprin.iaknewsapp.rest.ApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
     LinearLayoutManager mLinearLayoutManager;
     NewsAdapter mAdapter;
+
+    private static final String NEWS_SOURCE = "techcrunch";
+    private static final String API_KEY = "dab9dd81188a4395b299e79e1bc6951c";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,5 +55,24 @@ public class MainActivity extends AppCompatActivity {
             result.add(item);
         }
         return result;
+    }
+
+    private void getData(){
+        ApiService apiService = ApiClient.getmRetrofitClient().create(ApiService.class);
+        Call<ApiResponse> apiResponseCall = apiService.getArticle(
+            NEWS_SOURCE,
+                API_KEY
+        );
+        apiResponseCall.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+            }
+        });
     }
 }
